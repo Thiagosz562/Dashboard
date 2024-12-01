@@ -1,0 +1,160 @@
+/* Overlay do Popup */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Exibição do overlay quando ativado */
+.overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Estilo do wrapper do popup */
+.wrapper {
+    background: rgba(137, 197, 110, 0.9); /* Fundo do popup com tonalidade mais clara */
+    padding: 30px;
+    border-radius: 8px;
+    position: relative;
+    backdrop-filter: blur(20px);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 3px 0 13px rgba(137, 197, 110, 0.548); /* Sombra semelhante ao header */
+    transform: translateY(-50px);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Exibição do wrapper quando ativado */
+.wrapper.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Ícone de fechar */
+.icon-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: rgba(95, 131, 72, 1); /* Verde mais escuro para contraste */
+}
+
+/* Títulos do Popup */
+.wrapper h2 {
+    color: #fff; /* Título em branco */
+    margin-bottom: 20px;
+}
+
+/* Estilo do campo de input */
+.input-box {
+    position: relative;
+    margin: 20px 0;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid rgba(95, 131, 72, 0.7); /* Borda com tom semelhante ao header */
+    border-radius: 5px;
+    background: #fff;
+    color: rgba(95, 131, 72, 1);
+    transition: border-color 0.3s ease;
+}
+
+/* Estilo da label dentro do input */
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    transform: translateY(-50%);
+    color: rgba(95, 131, 72, 0.7);
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+/* Estilo quando o input está em foco ou preenchido */
+.input-box input:focus + label,
+.input-box input:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 10px;
+    font-size: 0.8rem;
+    color: rgba(95, 131, 72, 1); /* Verde escuro */
+}
+
+/* Ícone dentro do input */
+.input-box .icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: rgba(95, 131, 72, 0.7);
+    font-size: 1.2rem;
+}
+
+/* Botão de ação (Login, Cadastrar, Atualizar) */
+.btn {
+    width: 100%;
+    padding: 10px;
+    background: rgba(95, 131, 72, 1); /* Mesma cor sólida do header */
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Hover no botão */
+.btn:hover {
+    background: rgba(137, 197, 110, 1); /* Tonalidade mais clara ao passar o mouse */
+    color: rgba(95, 131, 72, 1);
+}
+
+/* Links de troca entre login, cadastro e atualização */
+.login-register a {
+    color: rgba(95, 131, 72, 1); /* Verde escuro para links */
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+/* Hover nos links */
+.login-register a:hover {
+    color: rgba(137, 197, 110, 1); /* Tom mais claro ao passar o mouse */
+}
+
+/* Estilo de cada formulário (login, registro, atualização) */
+.form-box {
+    display: none; /* Inicialmente oculta */
+}
+
+.form-box.login {
+    display: block; /* Exibe o formulário de login por padrão */
+}
+
+.form-box.register {
+    display: none; /* Oculta o formulário de registro */
+}
+
+.form-box.update {
+    display: none; /* Oculta o formulário de atualização */
+}
+
+/* Exibe a form-box correspondente */
+.wrapper .form-box.show {
+    display: block;
+}
