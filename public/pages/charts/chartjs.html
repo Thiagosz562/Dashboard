@@ -858,26 +858,8 @@
             </div>
             <!-- /.card -->
 
-            <!-- DONUT CHART -->
-            <div class="card card-danger">
-              <div class="card-header">
-                <h3 class="card-title">Donut Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+          
+            
 
             <!-- PIE CHART -->
             <div class="card card-danger">
@@ -949,31 +931,58 @@
             </div>
             <!-- /.card -->
 
-            <!-- STACKED BAR CHART -->
-            <div class="card card-success">
-              <div class="card-header">
-                <h3 class="card-title">Stacked Bar Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart">
-                  <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+           
 
           </div>
           <!-- /.col (RIGHT) -->
+          <div class="col-md-6">
+            <div class="card card-danger">
+              <div class="card-header">
+                <h3 class="card-title">Consumo Anual (kWh)</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="pieChartAnnual" style="height: 250px;"></canvas>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Gráfico de Barras - Custo Mensal -->
+          <div class="col-md-6">
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Custo Mensal (R$)</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="barChartCost" style="height: 250px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="row">
+          <!-- Gráfico de Linhas - Tempo de Uso em 6 Meses -->
+          <div class="col-md-6">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Tempo de Uso em 6 Meses (Horas)</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="lineChartUsage" style="height: 250px;"></canvas>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Gráfico de Rosca - Comparação de Consumo Diário -->
+          <div class="col-md-6">
+            <div class="card card-warning">
+              <div class="card-header">
+                <h3 class="card-title">Consumo Diário (kWh)</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="donutChartDaily" style="height: 250px;"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -1222,6 +1231,99 @@
       options: stackedBarChartOptions
     })
   })
+
+  async function loadCharts() {
+    try {
+      const response = await fetch('/api/energy-data');
+      if (!response.ok) throw new Error('Erro ao buscar dados da API.');
+
+      const data = await response.json();
+
+      // Extraindo dados
+      const labels = data.map(item => item.aparelho);
+      const monthlyConsumption = data.map(item => item.consumoMensal);
+      const monthlyCost = data.map(item => item.custoEstimado);
+      const dailyConsumption = data.map(item => (item.consumoMensal || 0) / 30);
+      const usageInSixMonths = data.map(item => (item.tempoUso || 0) * 30 * 6);
+
+      // Gráfico de Pizza - Consumo Anual
+      new Chart(document.getElementById('pieChartAnnual'), {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            data: monthlyConsumption.map(value => value * 12),
+            backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+          }],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: true, position: 'bottom' } }
+        }
+      });
+
+      // Gráfico de Barras - Custo Mensal
+      new Chart(document.getElementById('barChartCost'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Custo Mensal (R$)',
+            data: monthlyCost,
+            backgroundColor: '#007bff',
+          }],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Custo (R$)' } },
+          },
+        }
+      });
+
+      // Gráfico de Linhas - Tempo de Uso em 6 Meses
+      new Chart(document.getElementById('lineChartUsage'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Tempo de Uso (Horas)',
+            data: usageInSixMonths,
+            borderColor: '#f39c12',
+            tension: 0.3,
+          }],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Tempo de Uso (h)' } },
+          },
+        }
+      });
+
+      // Gráfico de Rosca - Consumo Diário
+      new Chart(document.getElementById('donutChartDaily'), {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            data: dailyConsumption,
+            backgroundColor: ['#3c8dbc', '#d2d6de', '#f56954', '#00a65a', '#f39c12', '#00c0ef'],
+          }],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: true, position: 'bottom' } }
+        }
+      });
+
+    } catch (error) {
+      console.error('Erro ao carregar os gráficos:', error);
+    }
+  }
+
+  // Inicializar os gráficos ao carregar a página
+  document.addEventListener('DOMContentLoaded', loadCharts);
 </script>
 </body>
 </html>
