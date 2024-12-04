@@ -5,7 +5,9 @@ const path = require('path');
 const multer = require('multer');
 const session = require('express-session');
 const fs = require('fs');
+const router = express.Router();
 const { promisify } = require('util');
+const mysql = require('mysql2/promise');
 const { google } = require('googleapis'); // Adicionando a API do Google
 const oauth2Client = new google.auth.OAuth2(
     '579497627903-i3fi5b6utr3do1a87rtuei7jmcu6hh9u.apps.googleusercontent.com', // Substitua pelo seu client ID
@@ -34,6 +36,8 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000 // 24 horas
     }
 }));
+
+
 
 // Configuração do Google OAuth
 const SCOPES = ['profile', 'email'];
@@ -121,16 +125,33 @@ const upload = multer({
     storage: storage,
     limits: {
         fileSize: 5 * 1024 * 1024 // 5MB
-    },
+    },  
     fileFilter: function (req, file, cb) {
-        const filetypes = /jpeg|jpg|png|gif/;
+        const filetypes = /jpeg|jpg|png|gif|xlsx/;
         const mimetype = filetypes.test(file.mimetype);
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
         if (mimetype && extname) {
             return cb(null, true);
         }
-        cb(new Error('Apenas imagens são permitidas!'));
+        cb(new Error('Apenas arquivos Excel e imagens são permitidos!'));
+    }
+});
+
+// 🚀 Configuração para upload de planilhas Excel
+const planilhaStorage = multer.diskStorage({
+    destination: path.join(__dirname, 'uploads', 'planilhas'), // Diretório de upload
+    filename: (req, file, cb) => {
+        cb(null, 'planilha.xlsx'); // Sempre substitui a planilha antiga
+    }
+});
+
+const uploadPlanilha = multer({
+    storage: planilhaStorage,
+    fileFilter: (req, file, cb) => {
+        const allowed = /xlsx/.test(path.extname(file.originalname).toLowerCase());
+        if (allowed) return cb(null, true);
+        cb(new Error('Somente arquivos Excel (.xlsx) são permitidos!'));
     }
 });
 
@@ -436,6 +457,155 @@ app.get("/api/energy-data", (req, res) => {
 });
 
 
+
+app.post('/api/upload-planilha', uploadPlanilha.single('planilha'), (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: 'Usuário não autenticado.' });
+    }
+
+    const userId = req.session.user.id;
+
+    try {
+        if (!req.file) {
+            console.error('Nenhum arquivo enviado.');
+            return res.status(400).json({ message: 'Nenhum arquivo enviado.' });
+        }
+
+        // Ler a planilha
+        const workbook = xlsx.readFile(req.file.path);
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = xlsx.utils.sheet_to_json(sheet, { defval: "" }); // Evitar campos nulos
+
+        // Limpar tabela de consumo do usuário antes de inserir novos dados
+        db.query('DELETE FROM consumo WHERE usuario_id = ?', [userId], (truncateErr) => {
+            if (truncateErr) {
+                console.error('Erro ao limpar dados antigos:', truncateErr);
+                return res.status(500).json({ error: 'Erro ao limpar os dados antigos.' });
+            }
+
+            jsonData.forEach((linha) => {
+                const aparelho = linha["Aparelho"];
+                const potencia = parseFloat(linha["Potência(W)"]) || 0;
+                const tempoUso = parseFloat(linha["Tempo de Uso(h)"]) || 0;
+                const consumoDiario = parseFloat(linha["Consumo Diário(kWh)"]) || 0;
+                const consumoMensal = parseFloat(linha["Consumo Mensal(kWh)"]) || 0;
+                const custoEstimado = parseFloat(linha["Custo Estimado(R$)"]) || 0;
+
+                if (aparelho) {
+                    db.query(
+                        'INSERT INTO consumo (usuario_id, aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                        [userId, aparelho, potencia, tempoUso, consumoDiario, consumoMensal, custoEstimado],
+                        (err) => {
+                            if (err) {
+                                console.error(`Erro ao inserir ${aparelho}:`, err);
+                            } else {
+                                console.log(`Aparelho inserido: ${aparelho}`);
+                            }
+                        }
+                    );
+                } else {
+                    console.warn(`Linha inválida ignorada: ${JSON.stringify(linha)}`);
+                }
+            });
+
+            res.status(200).json({ message: 'Planilha carregada e processada com sucesso!' });
+        });
+    } catch (error) {
+        console.error('Erro ao processar a planilha:', error.message);
+        res.status(500).json({ error: 'Erro ao processar a planilha.' });
+    }
+});
+
+
+app.get('/api/get-consumo-data', (req, res) => {
+    const userId = req.session.user?.id;
+    if (!userId) {
+        return res.status(401).json({ message: 'Usuário não autenticado' });
+    }
+
+    db.query(
+        'SELECT aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado FROM consumo WHERE usuario_id = ?',
+        [userId],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao buscar dados:', err);
+                return res.status(500).json({ error: 'Erro ao buscar dados do banco.' });
+            }
+            res.json(results);
+        }
+    );
+});
+
+
+
+app.post('/api/adicionar-consumo-personalizado', async (req, res) => {
+    const {
+      aparelho,
+      potencia,
+      tempo_uso,
+      consumo_diario,
+      consumo_mensal,
+      custo_estimado,
+    } = req.body;
+  
+    try {
+      await db.query(
+        `INSERT INTO consumo_personalizado (aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado]
+      );
+  
+      res.status(201).json({ message: 'Consumo personalizado adicionado com sucesso!' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao adicionar consumo personalizado.' });
+    }
+  });
+
+  app.post('/api/consumo-personalizado', (req, res) => {
+    const { aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado } = req.body;
+
+    const query = `
+        INSERT INTO consumo_personalizado (aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(query, [aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado], (err, results) => {
+        if (err) {
+            console.error('Erro ao inserir dados:', err);
+            res.status(500).json({ message: 'Erro ao salvar os dados no banco de dados.' });
+        } else {
+            res.status(201).json({ message: 'Dados inseridos com sucesso!', id: results.insertId });
+        }
+    });
+});
+
+
+
+app.get('/api/consumo-personalizado', (req, res) => {
+    const query = 'SELECT * FROM consumo_personalizado';
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar dados:', err);
+            res.status(500).json({ message: 'Erro ao buscar dados do banco de dados.' });
+        } else {
+            res.status(200).json(results);
+        }
+    });
+});
+
+app.get('/user', verificarAutenticacao, (req, res) => {
+    const userId = req.session.user.id;
+    db.query('SELECT nome, email, profilePic FROM usuario WHERE id = ?', [userId], (err, results) => {
+        if (err) return res.status(500).json({ message: 'Erro no servidor.' });
+        if (results.length === 0) return res.status(404).json({ message: 'Usuário não encontrado.' });
+        res.json(results[0]);
+    });
+});
+
+  
+  module.exports = router;
 
 // inicializar o servidor
 app.listen(5505, () => {
