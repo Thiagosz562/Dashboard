@@ -866,27 +866,27 @@
                         <div class="card-header">
                           <h3 class="card-title">Adicionar Dados de Consumo</h3>
                         </div>
-                        <form id="consumoForm">
+                        <form id="consumoForm" method="POST" action="/api/consumo-personalizado">
                           <label for="aparelho">Aparelho:</label>
                           <input type="text" id="aparelho" name="aparelho" required>
-                          
+                        
                           <label for="potencia">Potência (W):</label>
                           <input type="number" id="potencia" name="potencia" required step="0.01">
-                          
+                        
                           <label for="tempoUso">Tempo de Uso (horas):</label>
                           <input type="number" id="tempoUso" name="tempo_uso" required step="0.01">
-                          
+                        
                           <label for="consumoDiario">Consumo Diário (kWh):</label>
                           <input type="number" id="consumoDiario" name="consumo_diario" required step="0.01">
-                          
+                        
                           <label for="consumoMensal">Consumo Mensal (kWh):</label>
                           <input type="number" id="consumoMensal" name="consumo_mensal" required step="0.01">
-                          
+                        
                           <label for="custoEstimado">Custo Estimado (R$):</label>
                           <input type="number" id="custoEstimado" name="custo_estimado" required step="0.01">
-                          
+                        
                           <button type="submit">Enviar</button>
-                      </form>
+                        </form>
                       <div id="resultado"></div>
                       </div>
                     </div>
@@ -1050,16 +1050,48 @@
 <script src="../../plugins/chart.js/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Função para buscar os dados da API consumo_personalizado
-    async function fetchConsumoPersonalizado() {
-        try {
-            const response = await fetch('/api/consumo-personalizado');
-            const data = await response.json();
-            atualizarGraficos(data);
-        } catch (error) {
-            console.error('Erro ao buscar dados da API:', error);
+   document.getElementById('consumoForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/api/consumo-personalizado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            alert('Dados enviados com sucesso!');
+            window.location.reload(); // Recarrega a página automaticamente
+        } else {
+            const result = await response.json();
+            alert(`Erro: ${result.message}`);
         }
+    } catch (error) {
+        console.error('Erro no envio:', error);
+        alert('Erro ao enviar os dados. Verifique a conexão.');
     }
+});
+
+async function fetchConsumoPersonalizado() {
+    try {
+        const response = await fetch('/api/consumo-personalizado');
+        if (!response.ok) {
+            throw new Error('Erro ao buscar dados da API');
+        }
+        const data = await response.json();
+        if (data.length === 0) {
+            alert('Nenhum dado disponível para exibir.');
+        }
+        atualizarGraficos(data);
+    } catch (error) {
+        console.error('Erro ao buscar dados da API:', error);
+        alert('Erro ao carregar os dados. Verifique a conexão com o servidor.');
+    }
+}
 
     // Função para atualizar os gráficos
     function atualizarGraficos(dados) {

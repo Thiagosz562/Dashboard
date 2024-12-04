@@ -18,6 +18,8 @@
       <link rel="stylesheet" href="css/style.css">
       <!-- responsive-->
       <link rel="stylesheet" href="css/responsive.css">
+      <!--login-->
+      <link rel="stylesheet" href="css/login.css">
       <!-- awesome fontfamily -->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <!--[if lt IE 9]>
@@ -40,7 +42,7 @@
                      <div class="full">
                         <div class="center-desk">
                            <div class="logo">
-                              <a href="index.html"><img src="images/logo.png" alt="#" /></a>
+                              <a href="home.html"><img src="images/logo.png" alt="#" /></a>
                            </div>
                         </div>
                      </div>
@@ -53,19 +55,16 @@
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item">
-                                 <a class="nav-link" href="index.html">Home</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="about.html">Sobre</a>
+                                 <a class="nav-link" href="home.html">Home</a>
                               </li>
                               <li class="nav-item active">
-                                 <a class="nav-link" href="we_do.html">Objetivo</a>
+                                 <a class="nav-link" href="sobre.html">Sobre</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="portfolio.html">Equipe</a>
+                                 <a class="nav-link" href="objetivo.html">Objetivo</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="contact.html">Contate-nos</a>
+                                 <a class="nav-link" href="contato.html">Contate-nos</a>
                               </li>
                            </ul>
                         </div>
@@ -73,10 +72,109 @@
                   </div>
                   <div class="col-md-2 d_none">
                      <ul class="email text_align_right">
-                        <li> <a href="Javascript:void(0)"> Login </a></li>
-                        <li> <a href="Javascript:void(0)"> <i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"> </i></a> </li>
+                         <li> <a href="javascript:void(0)" id="openLoginPopup">Login</a></li>
                      </ul>
                   </div>
+
+                  <div class="overlay">
+                     <div class="wrapper">
+                         <span class="icon-close">
+                             <ion-icon name="close"></ion-icon>
+                         </span>
+                  
+                         <div class="form-box login">
+                             <h2>Login</h2>
+                             <form action="#"> 
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                                     <input type="email" required>
+                                     <label>Email</label>
+                                 </div>
+                  
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                                     <input type="password" required>
+                                     <label>Senha</label>
+                                 </div>
+                                 <div class="lembrar-esquecer">
+                                     <label><input type="checkbox"> Lembrar-me</label>
+                                     <a href="#" class="update-link">Esqueceu sua senha?</a>
+                                 </div>
+                                 <button type="submit" class="btn">Login</button>
+                                 <div class="login-register">
+                                     <p>Não tem uma conta?
+                                     <a href="#" class="register-link">Cadastrar-me</a>
+                                     </p>
+                                 </div>
+                                 <!-- Botão Login Google -->
+                                <div class="input-box google-login">
+                                  <span class="icon"><ion-icon name="logo-google"></ion-icon></span>
+                                  <!-- Botão para login com Google -->
+                                  <button class="btn" onclick="window.location.href='/auth/google'">Login com Google</button>
+                   
+                                </div>
+                             </form>
+                         </div>
+                  
+                         <div class="form-box register">
+                             <h2>Cadastro</h2>
+                             <form action="#">
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="person"></ion-icon></span>
+                                     <input type="text" required>
+                                     <label>Nome</label>
+                                 </div>
+                  
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                                     <input type="email" required>
+                                     <label>Email</label>
+                                 </div>
+                  
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                                     <input type="password" required>
+                                     <label>Senha</label>
+                                 </div>
+                                 <div class="lembrar-esquecer">
+                                     <label><input type="checkbox"> Eu aceito os termos e condições</label>
+                                 </div>
+                                 <button type="submit" class="btn">Cadastrar</button>
+                                 <div class="login-register">
+                                     <p>Já tem uma conta?
+                                     <a href="#" class="login-link">Login</a>
+                                     </p>
+                                 </div>
+                             </form>
+                         </div>
+                  
+                         <div class="form-box update">
+                             <h2>Atualizar senha</h2>
+                             <form id="updatePasswordForm">
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                                     <input type="email" id="updateEmail" required>
+                                     <label>Email</label>
+                                 </div>
+                         
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                                     <input type="password" id="newPassword" required>
+                                     <label>Nova Senha</label>
+                                 </div>
+                         
+                                 <div class="input-box">
+                                     <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                                     <input type="password" id="confirmPassword" required>
+                                     <label>Confirmar Nova Senha</label>
+                                 </div>
+                                 <button type="submit" class="btn">Atualizar Senha</button>
+                             </form>
+                         </div>        
+                  
+                     </div>
+                  </div>
+
                </div>
             </div>
          </div>
@@ -91,7 +189,7 @@
             <div class="row">
                <div class="col-md-12">
                   <div class="titlepage text_align_center">
-                     <h2>What we do </h2>
+                     <h2>Sobre</h2>
                   </div>
                </div>
             </div>
@@ -112,28 +210,32 @@
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>TSEE <br></h3>
+                                          <p>
+                                             Aproveite iniciativas públicas, como o programa Tarifa Social de Energia Elétrica (TSEE), que 
+                                             oferece descontos para famílias de baixa renda.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="https://www.gov.br/aneel/pt-br/assuntos/tarifas/tarifa-social">Leia Mais</a>
                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Tarifas  <br>Reduzidas:</h3>
+                                          <p>
+                                             Identificar os horários com tarifas mais baixas e priorizar o uso dos eletrodomésticos de maior consumo.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="https://www.neoenergia.com/web/bahia/composicao-tarifaria">Leia Mais</a>
                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Consumo em <br>Standby:</h3>
+                                          <p> 
+                                             Desligar aparelhos da tomada quando não estão em uso, como televisores, micro-ondas e carregadores de celular.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                  </div>
@@ -147,28 +249,29 @@
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Acesso à<br>energia sustentável</h3>
+                                          <p>Proporciona uma alternativa limpa e acessível à energia convencional, reduzindo custos e
+                                             impactos ambientais.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we2.png" alt="#"/></i>
-                                          <h3>App <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Independência<br>energética</h3>
+                                          <p>Torna a comunidade autossuficiente em energia, principalmente em áreas isoladas.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we3.png" alt="#"/></i>
-                                          <h3>website <br>design</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Geração de empregos <br>e capacitação</h3>
+                                          <p>Impulsiona a economia, gerando empregos para a instalação e manutenção das turbinas.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                  </div>
@@ -182,28 +285,31 @@
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Localização <br>costeira</h3>
+                                          <p>Paripe, localizada à beira da Baía de Todos-os-Santos, tem boa exposição ao vento, com brisas 
+                                             marítimas constantes, especialmente à tarde, o que a torna ideal para sistemas de energia eólica de pequeno porte.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Topografia e<br>abertura</h3>
+                                          <p>A região tem uma topografia aberta e terrenos baixos, 
+                                             o que facilita a instalação de turbinas eólicas, pois há poucos obstáculos naturais ou construídos que interferem na captação do vento.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                        <div id="bo_ho" class="we_box text_align_left">
                                           <i><img src="images/we1.png" alt="#"/></i>
-                                          <h3>website <br>development</h3>
-                                          <p>many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which
+                                          <h3>Intensidade e<br>regularidade do vento</h3>
+                                          <p>A proximidade com o mar garante uma boa intensidade e regularidade dos
+                                              ventos durante o dia, o que é essencial para a eficiência das turbinas eólicas.
                                           </p>
-                                          <a class="read_more" href="we_do">Read More</a>
+                                          <a class="read_more" href="we_do">Leia Mais</a>
                                        </div>
                                     </div>
                                  </div>
@@ -231,71 +337,38 @@
             <div class="container">
                <div class="row">
                   <div class="col-md-3">
-                     <a class="logo_footer" href="index.html"><img src="images/logo_footer.png" alt="#" /></a>
+                     <a class="logo_footer" href="home.html"><img src="images/logo_footer.png" alt="#" /></a>
                   </div>
                   <div class="col-md-9">
                      <form class="newslatter_form">
                         <input class="ente" placeholder="Enter your email" type="text" name="Enter your email">
-                        <button class="subs_btn">Sbscribe Now</button>
+                        <button class="subs_btn">Inscreva-se agora</button>
                      </form>
                   </div>
-                  <div class="col-md-3 col-sm-6">
+                  <div class="col-md-3 col-sm-6"
+                  >
                      <div class="Informa helpful">
-                        <h3>Useful  Link</h3>
+                        <h3>Links</h3>
                         <ul>
-                           <li><a href="index.html">Home</a></li>
-                           <li><a href="about.html">About</a></li>
-                           <li><a href="we_do.html">What we do</a></li>
-                           <li><a href="portfolio.html">Portfolio</a></li>
-                           <li><a href="contact.html">Contact us</a></li>
-                        </ul>
-                     </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6">
-                     <div class="Informa">
-                        <h3>News</h3>
-                        <ul>
-                           <li>It is a long established                            
-                           </li>
-                           <li>fact that a reader will                           
-                           </li>
-                           <li>be distracted by the                           
-                           </li>
-                           <li>readable content of a                              
-                           </li>
-                           <li>page when                          
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6">
-                     <div class="Informa">
-                        <h3>company</h3>
-                        <ul>
-                           <li>It is a long established                             
-                           </li>
-                           <li>fact that a reader will                            
-                           </li>
-                           <li>be distracted by the                          
-                           </li>
-                           <li>readable content of a                              
-                           </li>
-                           <li>page when                          
-                           </li>
+                           <li><a href="home.html">Home</a></li>
+                           <li><a href="sobre.html">Sobre</a></li>
+                           <li><a href="objetivo.html">Objetivo</a></li>
+                           <li><a href="equipe.html">Equipe</a></li>
+                           <li><a href="contato.html">Contate-nos</a></li>
                         </ul>
                      </div>
                   </div>
                   <div class="col-md-3 col-sm-6">
                      <div class="Informa conta">
-                        <h3>contact Us</h3>
+                        <h3>Contate-nos</h3>
                         <ul>
-                           <li> <a href="Javascript:void(0)"> <i class="fa fa-map-marker" aria-hidden="true"></i> Location
+                           <li> <a href="Javascript:void(0)"> <i class="fa fa-map-marker" aria-hidden="true"></i> Senai CIMATEC
                               </a>
                            </li>
-                           <li> <a href="Javascript:void(0)"><i class="fa fa-phone" aria-hidden="true"></i> Call +01 1234567890
+                           <li> <a href="Javascript:void(0)"><i class="fa fa-phone" aria-hidden="true"></i> Ligue +55 (71)9 8402-8922
                               </a>
                            </li>
-                           <li> <a href="Javascript:void(0)"> <i class="fa fa-envelope" aria-hidden="true"></i> demo@gmail.com
+                           <li> <a href="Javascript:void(0)"> <i class="fa fa-envelope" aria-hidden="true"></i> highenergytec@gmail.com
                               </a>
                            </li>
                         </ul>
@@ -325,9 +398,11 @@
       </footer>
       <!-- end footer -->
       <!-- Javascript files-->
+      <script src="js/login.js"></script>
       <script src="js/jquery.min.js"></script>
       <script src="js/bootstrap.bundle.min.js"></script>
       <script src="js/jquery-3.0.0.min.js"></script>
       <script src="js/custom.js"></script>
    </body>
+   <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
 </html>

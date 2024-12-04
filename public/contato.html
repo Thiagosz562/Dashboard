@@ -18,6 +18,8 @@
       <link rel="stylesheet" href="css/style.css">
       <!-- responsive-->
       <link rel="stylesheet" href="css/responsive.css">
+      <!--login-->
+      <link rel="stylesheet" href="css/login.css">
       <!-- awesome fontfamily -->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <!--[if lt IE 9]>
@@ -40,7 +42,7 @@
                      <div class="full">
                         <div class="center-desk">
                            <div class="logo">
-                              <a href="index.html"><img src="images/logo.png" alt="#" /></a>
+                              <a href="home.html"><img src="images/logo.png" alt="#" /></a>
                            </div>
                         </div>
                      </div>
@@ -53,19 +55,16 @@
                         <div class="collapse navbar-collapse" id="navbarsExample04">
                            <ul class="navbar-nav mr-auto">
                               <li class="nav-item">
-                                 <a class="nav-link" href="index.html">Home</a>
+                                 <a class="nav-link" href="home.html">Home</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="about.html">Sobre</a>
+                                 <a class="nav-link" href="sobre.html">Sobre</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="we_do.html">Objetivo</a>
-                              </li>
-                              <li class="nav-item">
-                                 <a class="nav-link" href="portfolio.html">Equipe</a>
+                                 <a class="nav-link" href="objetivo.html">Objetivo</a>
                               </li>
                               <li class="nav-item active">
-                                 <a class="nav-link" href="contact.html">Contate-nos</a>
+                                 <a class="nav-link" href="contato.html">Contate-nos</a>
                               </li>
                            </ul>
                         </div>
@@ -73,10 +72,110 @@
                   </div>
                   <div class="col-md-2 d_none">
                      <ul class="email text_align_right">
-                        <li> <a href="Javascript:void(0)"> Login </a></li>
-                        <li> <a href="Javascript:void(0)"> <i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"> </i></a> </li>
+                         <li> <a href="javascript:void(0)" id="openLoginPopup">Login</a></li>
                      </ul>
                   </div>
+
+                  <!--login-->
+<div class="overlay">
+   <div class="wrapper">
+       <span class="icon-close">
+           <ion-icon name="close"></ion-icon>
+       </span>
+
+       <div class="form-box login">
+           <h2>Login</h2>
+           <form action="#"> 
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                   <input type="email" required>
+                   <label>Email</label>
+               </div>
+
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                   <input type="password" required>
+                   <label>Senha</label>
+               </div>
+               <div class="lembrar-esquecer">
+                   <label><input type="checkbox"> Lembrar-me</label>
+                   <a href="#" class="update-link">Esqueceu sua senha?</a>
+               </div>
+               <button type="submit" class="btn">Login</button>
+               <div class="login-register">
+                   <p>Não tem uma conta?
+                   <a href="#" class="register-link">Cadastrar-me</a>
+                   </p>
+               </div>
+               <!-- Botão Login Google -->
+              <div class="input-box google-login">
+                <span class="icon"><ion-icon name="logo-google"></ion-icon></span>
+                <!-- Botão para login com Google -->
+                <button class="btn" onclick="window.location.href='/auth/google'">Login com Google</button>
+ 
+              </div>
+           </form>
+       </div>
+
+       <div class="form-box register">
+           <h2>Cadastro</h2>
+           <form action="#">
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="person"></ion-icon></span>
+                   <input type="text" required>
+                   <label>Nome</label>
+               </div>
+
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                   <input type="email" required>
+                   <label>Email</label>
+               </div>
+
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                   <input type="password" required>
+                   <label>Senha</label>
+               </div>
+               <div class="lembrar-esquecer">
+                   <label><input type="checkbox"> Eu aceito os termos e condições</label>
+               </div>
+               <button type="submit" class="btn">Cadastrar</button>
+               <div class="login-register">
+                   <p>Já tem uma conta?
+                   <a href="#" class="login-link">Login</a>
+                   </p>
+               </div>
+           </form>
+       </div>
+
+       <div class="form-box update">
+           <h2>Atualizar senha</h2>
+           <form id="updatePasswordForm">
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="mail"></ion-icon></span>
+                   <input type="email" id="updateEmail" required>
+                   <label>Email</label>
+               </div>
+       
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                   <input type="password" id="newPassword" required>
+                   <label>Nova Senha</label>
+               </div>
+       
+               <div class="input-box">
+                   <span class="icon"><ion-icon name="lock"></ion-icon></span>
+                   <input type="password" id="confirmPassword" required>
+                   <label>Confirmar Nova Senha</label>
+               </div>
+               <button type="submit" class="btn">Atualizar Senha</button>
+           </form>
+       </div>        
+
+   </div>
+</div>
+
                </div>
             </div>
          </div>
@@ -90,24 +189,24 @@
             <div class="row ">
                <div class="col-md-8 offset-md-2">
                   <div class="titlepage text_align_left">
-                     <h2>Get In Touch</h2>
+                     <h2>Contato</h2>
                   </div>
                   <form id="request" class="main_form">
                      <div class="row">
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Name" type="type" name=" Name"> 
+                           <input class="contactus" placeholder="Nome" type="type" name=" Name"> 
                         </div>
                         <div class="col-md-12">
-                           <input class="contactus" placeholder="Phone Number" type="type" name="Phone Number">                          
+                           <input class="contactus" placeholder="Telefone" type="type" name="Phone Number">                          
                         </div>
                         <div class="col-md-12">
                            <input class="contactus" placeholder="Email" type="type" name="Email">                          
                         </div>
                         <div class="col-md-12">
-                           <textarea class="textarea" placeholder="Message" type="type" Message="Name"></textarea>
+                           <textarea class="textarea" placeholder="Menssagem" type="type" Message="Name"></textarea>
                         </div>
                         <div class="col-md-12">
-                           <button class="send_btn">Send Now</button>
+                           <button class="send_btn">Enviar</button>
                         </div>
                      </div>
                   </form>
@@ -122,71 +221,38 @@
             <div class="container">
                <div class="row">
                   <div class="col-md-3">
-                     <a class="logo_footer" href="index.html"><img src="images/logo_footer.png" alt="#" /></a>
+                     <a class="logo_footer" href="home.html"><img src="images/logo_footer.png" alt="#" /></a>
                   </div>
                   <div class="col-md-9">
                      <form class="newslatter_form">
                         <input class="ente" placeholder="Enter your email" type="text" name="Enter your email">
-                        <button class="subs_btn">Sbscribe Now</button>
+                        <button class="subs_btn">Inscreva-se agora</button>
                      </form>
                   </div>
-                  <div class="col-md-3 col-sm-6">
+                  <div class="col-md-3 col-sm-6"
+                  >
                      <div class="Informa helpful">
-                        <h3>Useful  Link</h3>
+                        <h3>Links</h3>
                         <ul>
-                           <li><a href="index.html">Home</a></li>
-                           <li><a href="about.html">About</a></li>
-                           <li><a href="we_do.html">What we do</a></li>
-                           <li><a href="portfolio.html">Portfolio</a></li>
-                           <li><a href="contact.html">Contact us</a></li>
-                        </ul>
-                     </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6">
-                     <div class="Informa">
-                        <h3>News</h3>
-                        <ul>
-                           <li>It is a long established                            
-                           </li>
-                           <li>fact that a reader will                           
-                           </li>
-                           <li>be distracted by the                           
-                           </li>
-                           <li>readable content of a                              
-                           </li>
-                           <li>page when                          
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6">
-                     <div class="Informa">
-                        <h3>company</h3>
-                        <ul>
-                           <li>It is a long established                             
-                           </li>
-                           <li>fact that a reader will                            
-                           </li>
-                           <li>be distracted by the                          
-                           </li>
-                           <li>readable content of a                              
-                           </li>
-                           <li>page when                          
-                           </li>
+                           <li><a href="home.html">Home</a></li>
+                           <li><a href="sobre.html">Sobre</a></li>
+                           <li><a href="objetivo.html">Objetivo</a></li>
+                           <li><a href="equipe.html">Equipe</a></li>
+                           <li><a href="contato.html">Contate-nos</a></li>
                         </ul>
                      </div>
                   </div>
                   <div class="col-md-3 col-sm-6">
                      <div class="Informa conta">
-                        <h3>contact Us</h3>
+                        <h3>Contate-nos</h3>
                         <ul>
-                           <li> <a href="Javascript:void(0)"> <i class="fa fa-map-marker" aria-hidden="true"></i> Location
+                           <li> <a href="Javascript:void(0)"> <i class="fa fa-map-marker" aria-hidden="true"></i> Senai CIMATEC
                               </a>
                            </li>
-                           <li> <a href="Javascript:void(0)"><i class="fa fa-phone" aria-hidden="true"></i> Call +01 1234567890
+                           <li> <a href="Javascript:void(0)"><i class="fa fa-phone" aria-hidden="true"></i> Ligue +55 (71)9 8402-8922
                               </a>
                            </li>
-                           <li> <a href="Javascript:void(0)"> <i class="fa fa-envelope" aria-hidden="true"></i> demo@gmail.com
+                           <li> <a href="Javascript:void(0)"> <i class="fa fa-envelope" aria-hidden="true"></i> highenergytec@gmail.com
                               </a>
                            </li>
                         </ul>
@@ -216,9 +282,41 @@
       </footer>
       <!-- end footer -->
       <!-- Javascript files-->
+      <script src="js/login.js"></script>
       <script src="js/jquery.min.js"></script>
       <script src="js/bootstrap.bundle.min.js"></script>
       <script src="js/jquery-3.0.0.min.js"></script>
       <script src="js/custom.js"></script>
+      <!--Contato-->
+    <script>
+      document.querySelector('.main_form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const nome = this.querySelector('#nome').value;
+    const email = this.querySelector('#email').value;
+    const telefone = this.querySelector('#telefone').value;
+    const mensagem = this.querySelector('#mensagem').value;
+
+    fetch('/contato', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nome, email, telefone, mensagem }),
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Mensagem enviada com sucesso!');
+            this.reset();
+        } else {
+            alert('Erro ao enviar a mensagem: ' + response.statusText);
+        }
+    })
+    .catch(error => {
+        alert('Erro: ' + error.message);
+    });
+});
+ </script>
    </body>
+   <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
 </html>

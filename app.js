@@ -16,6 +16,9 @@ const oauth2Client = new google.auth.OAuth2(
 );
 const bcrypt = require('bcrypt');
 const xlsx = require("xlsx");
+const cors = require('cors');
+const nodemailer = require('nodemailer');
+
 
 const app = express();
 
@@ -24,6 +27,33 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.static('public'));
 app.use('/img', express.static(path.join(__dirname, 'img')));
+app.use(cors());
+
+function sendEmail(to, subject, text) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'highenergytec@gmail.com', // Substitua pelo seu e-mail
+            pass: 'tvyu gzrr loqr pmxh' // Substitua pela sua senha ou senha de app (se você usar a verificação em 2 etapas)
+        }
+    });
+
+    const mailOptions = {
+        from: 'highenergytec@gmail.com',
+        to: to,
+        subject: subject,
+        text: text
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Erro ao enviar o e-mail:', error);
+        } else {
+            console.log('E-mail enviado:', info.response);
+        }
+    });
+}
+
 
 
 // Configuração da sessão
@@ -54,18 +84,18 @@ app.get('/auth/google', (req, res) => {
 // Rota para o Google redirecionar após o login
 app.get('/auth/google/callback', async (req, res) => {
     const code = req.query.code;
-    
+   
     try {
         const { tokens } = await oauth2Client.getToken(code);
         oauth2Client.setCredentials(tokens);
-        
+       
         // Obter as informações do perfil do Google
         const people = google.people({ version: 'v1', auth: oauth2Client });
         const me = await people.people.get({
             resourceName: 'people/me',
             personFields: 'names,emailAddresses,photos'
         });
-        
+       
         // Processamento do login ou cadastro
         const googleUser = me.data;
         const { name, emailAddresses, photos } = googleUser;
@@ -78,15 +108,19 @@ app.get('/auth/google/callback', async (req, res) => {
                 console.error(err);
                 return res.status(500).json({ message: 'Erro ao verificar usuário no banco de dados.' });
             }
-            
+           
             if (results.length > 0) {
-                req.session.user = { 
-                    id: results[0].id, 
-                    nome: results[0].nome, 
-                    email: results[0].email, 
-                    profilePic: results[0].profilePic 
+                req.session.user = {
+                    id: results[0].id,
+                    nome: results[0].nome,
+                    email: results[0].email,
+                    profilePic: results[0].profilePic
                 };
+                console.log('Usuário logado:', req.session.user);
+                // Enviar e-mail de boas-vindas
+                sendEmail(email, 'Bem-vindo ao nosso sistema!', 'Obrigado por se cadastrar com sua conta Google!');
                 return res.redirect('/index');
+
             } else {
                 const insertQuery = 'INSERT INTO usuario (nome, email, profilePic) VALUES (?, ?, ?)';
                 db.query(insertQuery, [name, email, profilePic], (err, results) => {
@@ -94,13 +128,16 @@ app.get('/auth/google/callback', async (req, res) => {
                         console.error(err);
                         return res.status(500).json({ message: 'Erro ao criar novo usuário no banco de dados.' });
                     }
-                    
-                    req.session.user = { 
-                        id: results.insertId, 
-                        nome: name, 
-                        email, 
-                        profilePic 
+                   
+                    req.session.user = {
+                        id: results.insertId,
+                        nome: name,
+                        email,
+                        profilePic
                     };
+                    console.log('Usuário logado:', req.session.user);
+                    // Enviar e-mail de boas-vindas
+                    sendEmail(email, 'Bem-vindo ao nosso sistema!', 'Obrigado por se cadastrar com sua conta Google!');
                     res.redirect('/');
                 });
             }
@@ -234,15 +271,26 @@ app.post('/cadastro', (req, res) => {
 });
 
 
-// Rota para enviar contato
 app.post('/contato', (req, res) => {
     const { nome, email, telefone, mensagem } = req.body;
+
+    // Validação simples
     if (!nome || !email || !telefone || !mensagem) {
         return res.json({ success: false, message: 'Todos os campos são obrigatórios.' });
     }
+
+     // Enviar o e-mail para o destinatário inserido no formulário
+     const mailOptions = {
+        from: 'seuemail@gmail.com',  // Remetente (pode ser seu e-mail)
+        to: email, // E-mail do destinatário (inserido no formulário)
+        subject: 'Nova Mensagem de Contato', // Assunto do e-mail
+        text: `Você recebeu uma nova mensagem de contato:\n\nNome: ${nome}\nTelefone: ${telefone}\nMensagem: ${mensagem}` // Corpo do e-mail
+    };
+
+    // Inserção no banco de dados
     db.query(
-        'INSERT INTO contato (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)', 
-        [nome, email, telefone, mensagem], 
+        'INSERT INTO contato (nome, email, telefone, mensagem) VALUES (?, ?, ?, ?)',
+        [nome, email, telefone, mensagem],
         (err, results) => {
             if (err) {
                 console.error(err);
@@ -539,52 +587,52 @@ app.get('/api/get-consumo-data', (req, res) => {
 
 
 app.post('/api/adicionar-consumo-personalizado', async (req, res) => {
-    const {
-      aparelho,
-      potencia,
-      tempo_uso,
-      consumo_diario,
-      consumo_mensal,
-      custo_estimado,
-    } = req.body;
-  
-    try {
-      await db.query(
-        `INSERT INTO consumo_personalizado (aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado]
-      );
-  
-      res.status(201).json({ message: 'Consumo personalizado adicionado com sucesso!' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao adicionar consumo personalizado.' });
-    }
-  });
-
-  app.post('/api/consumo-personalizado', (req, res) => {
     const { aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado } = req.body;
 
-    const query = `
-        INSERT INTO consumo_personalizado (aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
+    if (!aparelho || !potencia || !tempo_uso) {
+        return res.status(400).json({ message: 'Campos obrigatórios faltando' });
+    }
 
-    db.query(query, [aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado], (err, results) => {
-        if (err) {
-            console.error('Erro ao inserir dados:', err);
-            res.status(500).json({ message: 'Erro ao salvar os dados no banco de dados.' });
-        } else {
-            res.status(201).json({ message: 'Dados inseridos com sucesso!', id: results.insertId });
+    try {
+        const result = await db.query(
+            `INSERT INTO consumo_personalizado (aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado) VALUES (?, ?, ?, ?, ?, ?)`,
+            [aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado]
+        );
+        res.status(201).json({ message: 'Dados inseridos com sucesso!', id: result.insertId });
+    } catch (error) {
+        console.error('Erro SQL:', error);
+        res.status(500).json({ message: 'Erro ao salvar os dados no banco.' });
+    }
+});
+
+
+app.post('/api/consumo-personalizado', (req, res) => {
+    console.log('Dados recebidos:', req.body);
+    const { aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado } = req.body;
+
+    if (!aparelho || !potencia) {
+        return res.status(400).json({ message: 'Campos obrigatórios estão faltando.' });
+    }
+
+    db.query(
+        `INSERT INTO consumo_personalizado (aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado)
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [aparelho, potencia, tempo_uso, consumo_diario, consumo_mensal, custo_estimado],
+        (err, results) => {
+            if (err) {
+                console.error('Erro no banco:', err);
+                res.status(500).json({ message: 'Erro ao inserir os dados.' });
+            } else {
+                res.status(201).json({ message: 'Dados inseridos com sucesso!' });
+            }
         }
-    });
+    );
 });
 
 
 
 app.get('/api/consumo-personalizado', (req, res) => {
     const query = 'SELECT * FROM consumo_personalizado';
-
     db.query(query, (err, results) => {
         if (err) {
             console.error('Erro ao buscar dados:', err);
@@ -594,6 +642,7 @@ app.get('/api/consumo-personalizado', (req, res) => {
         }
     });
 });
+
 
 app.get('/user', verificarAutenticacao, (req, res) => {
     const userId = req.session.user.id;
